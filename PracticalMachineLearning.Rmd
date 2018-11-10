@@ -5,14 +5,28 @@ output:
           theme: cosmo
 ---
 
+Final Project - Practical Machine Learning
+===========================================
 
 # Executive Summary
+
+This analysis will predict the form of barbel lifting done on 20 occasions based on measurements taken from data collected from accelerometers on the belt, forearm, arm, and dumbell of 6 participants.
+
+Data acquired from : http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ
+
+Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
+
+Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.
+
+The data consists of 2 .csv files: mainData.csv which holds the raw experimental data and predData.csv which holds the prediction questions for the project.
+
+The intention is to use mainData.csv to form the training and testing sets on which the modelling will take place and to use the model to predict the outcomes for the data in predData.csv.
+
+The analysis will conclude that the Random Forest model gives the best results with near 100% accuracy and will make the predictions on that basis.
 
 # Data Processing
 
 ## Acquire Data
-
-
 
 ```{r message=FALSE}
 #Load Libraries
@@ -34,15 +48,7 @@ mainData <- read.csv("mainData.csv") %>% as_tibble()
 predData <- read.csv("predData.csv") %>% as_tibble()
 ```
 
-Data acquired from : http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ
 
-Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
-
-Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.
-
-The data consists of 2 .csv files: mainData.csv which holds the raw experimental data and predData.csv which holds the prediction questions for the project.
-
-The intention is to use mainData.csv to form the training and testing sets on which the modelling will take place and to use the model to predict the outcomes for the data in predData.csv.
 
 ## File Structure and Data Types
 
@@ -239,7 +245,7 @@ confMatrix.GBM$table
 postResample(testing$predictions.GBM.classe, testing$classe)
 ```
 
-The Accuracy of the model on the test set was 0.9967374, this means that the out of bag error is 0.003.
+The Accuracy of the model on the test set was 0.9955139, this means that the out of bag error is 0.004.
 
 ## Modelling conclusions
 
@@ -249,10 +255,19 @@ stopCluster(cluster)
 registerDoSEQ()
 ```
 
-The Random Forest had the best metrics with the lowest out of bag error of 0.0004.
+The Random Forest had the best metrics with the lowest out of bag error of 0.0004 and will be applied to the prediction dataset.
 
 ## Prediction Exercise
 
+```{r}
+#prediction exercise
+predictions.exercise <- predict(model.RF.classe, predDataClean)
+predDataClean$classe <- predictions.exercise
+predictions.exercise
+```
 
+# Conclusion
 
-# Conclusions
+The Random Forest performed the best and was applied to the prediction dataset to give an output of 20 predictions of the type of Unilateral Dumbbell Biceps Curl performed: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
+
+The predictions are used for the prediction quiz submission of the final course project.

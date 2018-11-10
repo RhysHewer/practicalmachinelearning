@@ -124,13 +124,23 @@ $(document).ready(function () {
 </div>
 
 
+<div id="final-project---practical-machine-learning" class="section level1">
+<h1><span class="header-section-number">1</span> Final Project - Practical Machine Learning</h1>
+</div>
 <div id="executive-summary" class="section level1">
-<h1><span class="header-section-number">1</span> Executive Summary</h1>
+<h1><span class="header-section-number">2</span> Executive Summary</h1>
+<p>This analysis will predict the form of barbel lifting done on 20 occasions based on measurements taken from data collected from accelerometers on the belt, forearm, arm, and dumbell of 6 participants.</p>
+<p>Data acquired from : <a href="http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ" class="uri">http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ</a></p>
+<p>Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).</p>
+<p>Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.</p>
+<p>The data consists of 2 .csv files: mainData.csv which holds the raw experimental data and predData.csv which holds the prediction questions for the project.</p>
+<p>The intention is to use mainData.csv to form the training and testing sets on which the modelling will take place and to use the model to predict the outcomes for the data in predData.csv.</p>
+<p>The analysis will conclude that the Random Forest model gives the best results with near 100% accuracy and will make the predictions on that basis.</p>
 </div>
 <div id="data-processing" class="section level1">
-<h1><span class="header-section-number">2</span> Data Processing</h1>
+<h1><span class="header-section-number">3</span> Data Processing</h1>
 <div id="acquire-data" class="section level2">
-<h2><span class="header-section-number">2.1</span> Acquire Data</h2>
+<h2><span class="header-section-number">3.1</span> Acquire Data</h2>
 <pre class="r"><code>#Load Libraries
 library(dplyr)
 library(tidyr)
@@ -146,14 +156,9 @@ library(doParallel)</code></pre>
 setwd(&quot;E:/Google Drive/Data Science/Coursera Data Science/Course 8&quot;)
 mainData &lt;- read.csv(&quot;mainData.csv&quot;) %&gt;% as_tibble()
 predData &lt;- read.csv(&quot;predData.csv&quot;) %&gt;% as_tibble()</code></pre>
-<p>Data acquired from : <a href="http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ" class="uri">http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises#ixzz5VsmSupeQ</a></p>
-<p>Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).</p>
-<p>Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.</p>
-<p>The data consists of 2 .csv files: mainData.csv which holds the raw experimental data and predData.csv which holds the prediction questions for the project.</p>
-<p>The intention is to use mainData.csv to form the training and testing sets on which the modelling will take place and to use the model to predict the outcomes for the data in predData.csv.</p>
 </div>
 <div id="file-structure-and-data-types" class="section level2">
-<h2><span class="header-section-number">2.2</span> File Structure and Data Types</h2>
+<h2><span class="header-section-number">3.2</span> File Structure and Data Types</h2>
 <pre class="r"><code>#review file structures
 namesComp &lt;- names(mainData) == names(predData) 
 summary(namesComp)</code></pre>
@@ -192,7 +197,7 @@ predData.num[, 8:159] &lt;- sapply(predData.num, function(x) as.numeric(as.chara
 <p>Reviewing the structure of the data it is apparent that the vast majority refers to the sensor data taken during the lifting exercises and, as such, should be treated as a numeric variable. Columns 8:159 changed to numerical data on both files in relation to this.</p>
 </div>
 <div id="missing-values" class="section level2">
-<h2><span class="header-section-number">2.3</span> Missing Values</h2>
+<h2><span class="header-section-number">3.3</span> Missing Values</h2>
 <pre class="r"><code>#removing NAs from training set
 mainDataClean &lt;- mainData.num
 mainDataClean &lt;- mainDataClean %&gt;% select_if(~ !any(is.na(.)))
@@ -212,7 +217,7 @@ mainDataShared &lt;- cbind(mainDataShared, mainDataClean[,57])</code></pre>
 <p>This means that, in essence, 103 of 160 features have been removed from the training/testing data at this stage due to missing data between the datasets.</p>
 </div>
 <div id="feature-selection" class="section level2">
-<h2><span class="header-section-number">2.4</span> Feature Selection</h2>
+<h2><span class="header-section-number">3.4</span> Feature Selection</h2>
 <pre class="r"><code>#check for outliers
 numericVars &lt;- Filter(is.double, mainDataShared) 
 outliers &lt;- numericVars %&gt;% sapply(function(x) boxplot(x, plot=FALSE)$out)
@@ -240,9 +245,9 @@ finalData &lt;- exploreData %&gt;% select(-X, -user_name, -raw_timestamp_part_1,
 </div>
 </div>
 <div id="modelling" class="section level1">
-<h1><span class="header-section-number">3</span> Modelling</h1>
+<h1><span class="header-section-number">4</span> Modelling</h1>
 <div id="preparatory-steps" class="section level2">
-<h2><span class="header-section-number">3.1</span> Preparatory Steps</h2>
+<h2><span class="header-section-number">4.1</span> Preparatory Steps</h2>
 <pre class="r"><code>#create training/testing sets
 set.seed(111)
 trainIndex &lt;- createDataPartition(finalData$classe, p = 0.75, list = FALSE)
@@ -258,13 +263,13 @@ fitControl&lt;- trainControl(method = &quot;cv&quot;, number = 5, savePrediction
 <p>Split data 75% training, 25% testing and apply 10 fold cross validation.</p>
 </div>
 <div id="models" class="section level2">
-<h2><span class="header-section-number">3.2</span> Models</h2>
+<h2><span class="header-section-number">4.2</span> Models</h2>
 <div id="support-vector-machine" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> Support Vector Machine</h3>
+<h3><span class="header-section-number">4.2.1</span> Support Vector Machine</h3>
 <pre class="r"><code>#modelling SVM
 system.time(model.SVM.classe &lt;- train(classe ~ ., data = training, method = &quot;svmLinear&quot;, trControl = fitControl))</code></pre>
 <pre><code>##    user  system elapsed 
-##   17.25    0.32   46.86</code></pre>
+##   18.14    0.39   50.00</code></pre>
 <pre class="r"><code>model.SVM.classe</code></pre>
 <pre><code>## Support Vector Machines with Linear Kernel 
 ## 
@@ -301,11 +306,12 @@ confMatrix.SVM$table</code></pre>
 <p>The Accuracy of the model on the test set was 0.7245106, this means that the out of bag error is 0.275.</p>
 </div>
 <div id="random-forest" class="section level3">
-<h3><span class="header-section-number">3.2.2</span> Random Forest</h3>
+<h3><span class="header-section-number">4.2.2</span> Random Forest</h3>
 <pre class="r"><code>#modelling RF
+set.seed(111)
 system.time(model.RF.classe &lt;- train(classe ~ ., data = training, method = &quot;rf&quot;, trControl = fitControl))</code></pre>
 <pre><code>##    user  system elapsed 
-##   27.80    0.12  167.72</code></pre>
+##   27.21    0.21  164.24</code></pre>
 <pre class="r"><code>model.RF.classe</code></pre>
 <pre><code>## Random Forest 
 ## 
@@ -315,13 +321,13 @@ system.time(model.RF.classe &lt;- train(classe ~ ., data = training, method = &q
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (5 fold) 
-## Summary of sample sizes: 11774, 11774, 11775, 11774, 11775 
+## Summary of sample sizes: 11774, 11775, 11774, 11776, 11773 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa    
-##    2    0.9953118  0.9940698
-##   22    0.9986411  0.9982812
-##   43    0.9978258  0.9972500
+##    2    0.9952439  0.9939837
+##   22    0.9990487  0.9987967
+##   43    0.9977579  0.9971639
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was mtry = 22.</code></pre>
@@ -345,11 +351,11 @@ confMatrix.RF$table</code></pre>
 <p>The Accuracy of the model on the test set was 0.9995922, this means that the out of bag error is 0.0004.</p>
 </div>
 <div id="decision-tree" class="section level3">
-<h3><span class="header-section-number">3.2.3</span> Decision Tree</h3>
+<h3><span class="header-section-number">4.2.3</span> Decision Tree</h3>
 <pre class="r"><code>#modelling DT
 system.time(model.DT.classe &lt;- train(classe ~ ., data = training, method = &quot;rpart&quot;, trControl = fitControl))</code></pre>
 <pre><code>##    user  system elapsed 
-##    2.38    0.03    2.89</code></pre>
+##    2.36    0.09    2.90</code></pre>
 <pre class="r"><code>model.DT.classe</code></pre>
 <pre><code>## CART 
 ## 
@@ -359,13 +365,13 @@ system.time(model.DT.classe &lt;- train(classe ~ ., data = training, method = &q
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (5 fold) 
-## Summary of sample sizes: 11773, 11774, 11773, 11776, 11776 
+## Summary of sample sizes: 11774, 11774, 11774, 11774, 11776 
 ## Resampling results across tuning parameters:
 ## 
-##   cp          Accuracy   Kappa     
-##   0.03797589  0.5558449  0.43321376
-##   0.05542106  0.4493071  0.26218516
-##   0.11677585  0.3153814  0.04747849
+##   cp          Accuracy   Kappa    
+##   0.03797589  0.5469413  0.4179794
+##   0.05542106  0.4493870  0.2624336
+##   0.11677585  0.3503218  0.1009347
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
 ## The final value used for the model was cp = 0.03797589.</code></pre>
@@ -389,11 +395,12 @@ confMatrix.DT$table</code></pre>
 <p>The Accuracy of the model on the test set was 0.5193719, this means that the out of bag error is 0.481.</p>
 </div>
 <div id="gradient-boosting-machine" class="section level3">
-<h3><span class="header-section-number">3.2.4</span> Gradient Boosting Machine</h3>
+<h3><span class="header-section-number">4.2.4</span> Gradient Boosting Machine</h3>
 <pre class="r"><code>#modelling GBM
+set.seed(111)
 system.time(model.GBM.classe &lt;- train(classe ~ ., data = training, method = &quot;gbm&quot;, trControl = fitControl, verbose = FALSE))</code></pre>
 <pre><code>##    user  system elapsed 
-##   19.25    0.06   81.96</code></pre>
+##   19.15    0.11   80.05</code></pre>
 <pre class="r"><code>model.GBM.classe</code></pre>
 <pre><code>## Stochastic Gradient Boosting 
 ## 
@@ -403,19 +410,19 @@ system.time(model.GBM.classe &lt;- train(classe ~ ., data = training, method = &
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (5 fold) 
-## Summary of sample sizes: 11775, 11774, 11774, 11773, 11776 
+## Summary of sample sizes: 11774, 11775, 11774, 11776, 11773 
 ## Resampling results across tuning parameters:
 ## 
 ##   interaction.depth  n.trees  Accuracy   Kappa    
-##   1                   50      0.7939255  0.7378283
-##   1                  100      0.8792659  0.8471033
-##   1                  150      0.9157514  0.8933083
-##   2                   50      0.9301551  0.9116065
-##   2                  100      0.9792772  0.9737801
-##   2                  150      0.9918464  0.9896860
-##   3                   50      0.9685428  0.9601876
-##   3                  100      0.9932057  0.9914056
-##   3                  150      0.9968066  0.9959606
+##   1                   50      0.7927722  0.7364597
+##   1                  100      0.8824587  0.8511544
+##   1                  150      0.9162264  0.8939180
+##   2                   50      0.9291367  0.9103122
+##   2                  100      0.9788023  0.9731783
+##   2                  150      0.9919149  0.9897733
+##   3                   50      0.9652137  0.9559734
+##   3                  100      0.9933417  0.9915783
+##   3                  150      0.9972142  0.9964764
 ## 
 ## Tuning parameter 'shrinkage' was held constant at a value of 0.1
 ## 
@@ -432,30 +439,38 @@ confMatrix.GBM &lt;- confusionMatrix(testing$classe, testing$predictions.GBM.cla
 confMatrix.GBM$table</code></pre>
 <pre><code>##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1392    3    0    0    0
-##          B    2  945    2    0    0
-##          C    0    3  849    3    0
-##          D    0    0    3  798    3
-##          E    0    0    0    2  899</code></pre>
+##          A 1393    2    0    0    0
+##          B    1  944    4    0    0
+##          C    0    2  850    3    0
+##          D    0    0    6  795    3
+##          E    0    0    0    1  900</code></pre>
 <pre class="r"><code>postResample(testing$predictions.GBM.classe, testing$classe)</code></pre>
 <pre><code>##  Accuracy     Kappa 
-## 0.9957178 0.9945837</code></pre>
-<p>The Accuracy of the model on the test set was 0.9967374, this means that the out of bag error is 0.003.</p>
+## 0.9955139 0.9943258</code></pre>
+<p>The Accuracy of the model on the test set was 0.9955139, this means that the out of bag error is 0.004.</p>
 </div>
 </div>
 <div id="modelling-conclusions" class="section level2">
-<h2><span class="header-section-number">3.3</span> Modelling conclusions</h2>
+<h2><span class="header-section-number">4.3</span> Modelling conclusions</h2>
 <pre class="r"><code>##Turn off parallel processing
 stopCluster(cluster)
 registerDoSEQ()</code></pre>
-<p>The Random Forest had the best metrics with the lowest out of bag error of 0.0004.</p>
+<p>The Random Forest had the best metrics with the lowest out of bag error of 0.0004 and will be applied to the prediction dataset.</p>
 </div>
 <div id="prediction-exercise" class="section level2">
-<h2><span class="header-section-number">3.4</span> Prediction Exercise</h2>
+<h2><span class="header-section-number">4.4</span> Prediction Exercise</h2>
+<pre class="r"><code>#prediction exercise
+predictions.exercise &lt;- predict(model.RF.classe, predDataClean)
+predDataClean$classe &lt;- predictions.exercise
+predictions.exercise</code></pre>
+<pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E</code></pre>
 </div>
 </div>
-<div id="conclusions" class="section level1">
-<h1><span class="header-section-number">4</span> Conclusions</h1>
+<div id="conclusion" class="section level1">
+<h1><span class="header-section-number">5</span> Conclusion</h1>
+<p>The Random Forest performed the best and was applied to the prediction dataset to give an output of 20 predictions of the type of Unilateral Dumbbell Biceps Curl performed: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).</p>
+<p>The predictions are used for the prediction quiz submission of the final course project.</p>
 </div>
 
 
